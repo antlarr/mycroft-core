@@ -46,8 +46,8 @@ DEBUG = Configuration.get().get("debug", False)
 skills_config = Configuration.get().get("skills")
 BLACKLISTED_SKILLS = skills_config.get("blacklisted_skills", [])
 PRIORITY_SKILLS = skills_config.get("priority_skills", [])
-SKILLS_DIR = skills_config.get("directory") or '/opt/mycroft/skills'
 
+SKILLS_DIR = skills_config.get("directory") or '/opt/mycroft/skills'
 installer_config = Configuration.get().get("SkillInstallerSkill")
 MSM_BIN = installer_config.get("path", join(MYCROFT_ROOT_PATH, 'msm', 'msm'))
 
@@ -326,8 +326,13 @@ class SkillManager(Thread):
         # Scan the file folder that contains Skills.  If a Skill is updated,
         # unload the existing version from memory and reload from the disk.
         while not self._stop_event.is_set():
+
+            # check if skill updates are enabled
+            update = Configuration.get().get("skills", {}).get(
+                "auto_update", True)
+
             # Update skills once an hour
-            if time.time() >= self.next_download:
+            if time.time() >= self.next_download and update:
                 self.download_skills()
 
             # Look for recently changed skill(s) needing a reload
