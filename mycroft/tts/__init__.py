@@ -14,7 +14,6 @@
 #
 import hashlib
 import random
-from Queue import Queue, Empty
 from threading import Thread
 from time import time, sleep
 
@@ -32,6 +31,11 @@ from mycroft.util import (
     play_wav, play_mp3, check_for_signal, create_signal, resolve_resource_file
 )
 from mycroft.util.log import LOG
+import sys
+if sys.version_info[0] < 3:
+    from Queue import Queue, Empty
+else:
+    from queue import Queue, Empty
 
 
 class PlaybackThread(Thread):
@@ -92,7 +96,7 @@ class PlaybackThread(Thread):
                 self.blink(0.2)
             except Empty:
                 pass
-            except Exception, e:
+            except Exception as e:
                 LOG.exception(e)
                 if self._processing_queue:
                     self.tts.end_audio()
