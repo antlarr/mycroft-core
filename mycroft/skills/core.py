@@ -255,7 +255,7 @@ class MycroftSkill(object):
         self.file_system = FileSystemAccess(join('skills', self.name))
         self.registered_intents = []
         self.log = LOG.create_logger(self.name)
-        self.reload_skill = True
+        self.reload_skill = True  # allow reloading
         self.events = []
         self.skill_id = 0
 
@@ -686,18 +686,16 @@ class MycroftSkill(object):
 
             Args:
                 name: Name of Intent or Scheduler Event
+            Returns:
+                bool: True if found and removed, False if not found
         """
+        removed = False
         for _name, _handler in self.events:
             if name == _name:
-                try:
-                    self.events.remove((_name, _handler))
-                except ValueError:
-                    pass
-                try:
-                    self.emitter.remove(_name, _handler)
-                except ValueError:
-                    LOG.debug('{} is not registered in the emitter'.format(
-                              _name))
+                self.events.remove((_name, _handler))
+                self.emitter.remove(_name, _handler)
+                removed = True
+        return removed
 
     def register_intent(self, intent_parser, handler, need_self=False):
         """
@@ -957,7 +955,7 @@ class MycroftSkill(object):
     def _schedule_event(self, handler, when, data=None, name=None,
                         repeat=None):
         """
-            Underlying method for schedle_event and schedule_repeating_event.
+            Underlying method for schedule_event and schedule_repeating_event.
             Takes scheduling information and sends it of on the message bus.
         """
         if not name:
@@ -1026,8 +1024,9 @@ class MycroftSkill(object):
         """
         unique_name = self._unique_name(name)
         data = {'event': unique_name}
-        self.remove_event(unique_name)
-        self.emitter.emit(Message('mycroft.scheduler.remove_event', data=data))
+        if self.remove_event(unique_name):
+            self.emitter.emit(Message('mycroft.scheduler.remove_event',
+                                      data=data))
 
     def get_scheduled_event_status(self, name):
         """
