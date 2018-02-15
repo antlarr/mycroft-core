@@ -144,11 +144,11 @@ def extract_datetime(text, anchorDate=None, lang="en-us"):
         return extract_datetime_pt(text, anchorDate)
     elif lang_lower.startswith("it"):
         return extract_datetime_it(text, anchorDate)
-    elif lang_lower.startswith("sv"):
-        return extract_datetime_sv(text, anchorDate)
     elif lang_lower.startswith("fr"):
         return extract_datetime_fr(text, anchorDate)
-
+    elif lang_lower.startswith("sv"):
+        return extract_datetime_sv(text, anchorDate)
+    # TODO: extract_datetime for other languages
     return text
 # ==============================================================
 
