@@ -658,8 +658,15 @@ class MycroftSkill(object):
         removed = False
         for _name, _handler in self.events:
             if name == _name:
-                self.events.remove((_name, _handler))
-                self.emitter.remove(_name, _handler)
+                try:
+                    self.events.remove((_name, _handler))
+                except ValueError:
+                    pass
+                try:
+                    self.emitter.remove(_name, _handler)
+                except (ValueError, KeyError):
+                    LOG.debug('{} is not registered in the emitter'.format(
+                              _name))
                 removed = True
         return removed
 
