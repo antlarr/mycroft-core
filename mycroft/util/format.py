@@ -45,6 +45,8 @@ def nice_number(number, lang="en-us", speech=True, denominators=None):
         return nice_number_it(number, speech, denominators)
     elif lang_lower.startswith("fr"):
         return nice_number_fr(number, speech, denominators)
+    elif lang_lower.startswith("sv"):
+        return nice_number_sv(number, speech, denominators)
 
     # Default to the raw number for unsupported languages,
     # hopefully the STT engine will pronounce understandably.
